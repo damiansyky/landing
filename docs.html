@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Integrate Sign in with DsxID: load the hosted SDK, mount the button, request checkout fields, and verify the signed assertion on your backend.">
+  <meta name="theme-color" content="#f3f3f3">
+  <title>SDK documentation — DsxID</title>
+  <link rel="canonical" href="https://dsxid.org/docs.html">
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <script>document.documentElement.classList.add("js");</script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 3l4 4M14 6l3 3"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16M14 6l6 6-6 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  </svg>
+
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="DsxID home">
+      <img class="brand-logo" src="assets/logo.png" alt="">
+      <span>DsxID</span>
+    </a>
+    <nav class="site-nav" id="site-nav" aria-label="Main navigation">
+      <a href="index.html#features">Features</a>
+      <a href="index.html#how">How it works</a>
+      <a href="docs.html">Docs</a>
+      <a href="index.html#developers">Developers</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-primary" href="download/DsxID.exe" download>
+        <svg><use href="#i-download"/></svg>
+        <span>Download</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="doc-main">
+    <div class="doc-head reveal">
+      <p class="eyebrow">Documentation</p>
+      <h1>Add DsxID to your website</h1>
+      <p class="doc-lede">One script tag, one button, one backend check. The private key never leaves the user's computer.</p>
+      <p class="doc-meta">SDK v0.1.0 · Hosted at dsxid.org · Server-side verification required</p>
+    </div>
+
+    <nav class="doc-toc" aria-label="Documentation sections">
+      <a href="#load">Load the SDK</a>
+      <a href="#mount">Mount the button</a>
+      <a href="#checkout">Checkout fields</a>
+      <a href="#backend">Backend contract</a>
+      <a href="#verify">Verify the assertion</a>
+      <a href="#security">Security notes</a>
+    </nav>
+
+    <section class="doc-section" id="load">
+      <h2>1. Load the SDK</h2>
+      <p>The browser SDK is served from this domain and can be cached by any CDN. Put these tags on the page that shows the sign-in or checkout button:</p>
+      <pre class="doc-code"><code>&lt;link rel="stylesheet" href="https://dsxid.org/sdk/dsxid.css"&gt;
+&lt;script src="https://dsxid.org/sdk/dsxid.js"&gt;&lt;/script&gt;</code></pre>
+      <p class="doc-note">Prefer to host it yourself? Save <code>https://dsxid.org/sdk/dsxid.js</code> and <code>https://dsxid.org/sdk/dsxid.css</code>, then serve them from your own domain. dsxid.org only serves these static files; no identity or profile data is sent there.</p>
+    </section>
+
+    <section class="doc-section" id="mount">
+      <h2>2. Mount the button</h2>
+      <p>Give the SDK your two backend endpoints. Nothing talks to the desktop app until the user clicks the button.</p>
+      <pre class="doc-code"><code>&lt;button id="dsxid-login" class="dsxid-button" type="button"&gt;
+  Sign in with DsxID
+&lt;/button&gt;
+
+&lt;script&gt;
+  DsxID.mount("#dsxid-login", {
+    startUrl: "/api/dsxid/start",
+    verifyUrl: "/api/dsxid/verify",
+    onSuccess: function (result) {
+      location.reload();
+    },
+    onError: function (error) {
+      console.error(error.message);
+    }
+  });
+&lt;/script&gt;</code></pre>
+      <p class="doc-note">DsxID must be installed, running, and unlocked on the user's computer. The SDK talks to the local bridge at <code>127.0.0.1:41991</code>; sign-in data reaches your server only after the user approves the request.</p>
+      <p>Data attributes work too, which is convenient for server-rendered templates:</p>
+      <pre class="doc-code"><code>&lt;button data-dsxid-login
+        data-start-url="/api/dsxid/start"
+        data-verify-url="/api/dsxid/verify"
+        class="dsxid-button"&gt;Sign in with DsxID&lt;/button&gt;
+&lt;script&gt;DsxID.mountAll({ onSuccess: () =&gt; location.reload() });&lt;/script&gt;</code></pre>
+    </section>
+
+    <section class="doc-section" id="checkout">
+      <h2>3. Ask for checkout fields</h2>
+      <p>Add a <code>profile</code> array with only the fields your form needs. DsxID shows the saved values in its approval dialog, and the signed assertion contains only the fields the user approved.</p>
+      <pre class="doc-code"><code>DsxID.mount("#checkout", {
+  startUrl: "/api/dsxid/start",
+  verifyUrl: "/api/dsxid/verify",
+  profile: ["fullName", "email", "phone", "address1",
+            "city", "postalCode", "country"],
+  onSuccess: function (result) {
+    for (const [key, value] of Object.entries(result.profile || {})) {
+      const input = document.querySelector(`[name="${key}"]`);
+      if (input) input.value = value;
+    }
+  }
+});</code></pre>
+      <p>Supported names: <code>fullName</code>, <code>email</code>, <code>phone</code>, <code>address1</code>, <code>address2</code>, <code>city</code>, <code>postalCode</code>, <code>country</code>, <code>company</code>, <code>vatId</code>. A field the user left empty is never invented and never returned.</p>
+    </section>
+
+    <section class="doc-section" id="backend">
+      <h2>4. Backend contract</h2>
+      <p>Your server owns the challenge and the session. Start by creating a random, single-use challenge and storing it with the visitor's session and a short expiry.</p>
+      <h3>POST /api/dsxid/start</h3>
+      <pre class="doc-code"><code>{ "challenge": "dGhpcy1pcy1hLW9uZS10aW1lLWNoYWxsZW5nZQ" }</code></pre>
+      <p>The SDK fetches the challenge, asks the local bridge at <code>127.0.0.1:41991</code> to sign it, and then posts this to your verify endpoint:</p>
+      <h3>POST /api/dsxid/verify</h3>
+      <pre class="doc-code"><code>{
+  "challenge": "...",
+  "assertion": "dsx1...",
+  "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n..."
+}</code></pre>
+      <p>Check the stored challenge, the origin, the key fingerprint, the Ed25519 signature, and the expiry. Consume the challenge once, then create your normal session and return:</p>
+      <pre class="doc-code"><code>{ "ok": true, "keyId": "...", "profile": { "fullName": "...", "email": "..." } }</code></pre>
+    </section>
+
+    <section class="doc-section" id="verify">
+      <h2>5. Verify the assertion</h2>
+      <p>The Node helper in the repository implements the checks above. It is server-side code and must not be shipped to the browser.</p>
+      <pre class="doc-code"><code>const { verifyAssertion } = require("./dsxid-verify");
+
+const result = verifyAssertion({
+  assertion: body.assertion,
+  publicKeyPem: body.publicKeyPem,
+  expectedOrigin: pending.origin,
+  expectedChallenge: pending.challenge,
+});
+
+// result.keyId is the stable identity fingerprint
+// result.profile holds only the signed, approved fields</code></pre>
+      <p class="doc-note"><code>expectedOrigin</code> must be the exact browser origin, for example <code>https://shop.example</code>. Never trust an origin supplied by the client.</p>
+    </section>
+
+    <section class="doc-section" id="security">
+      <h2>6. Security notes</h2>
+      <ul class="doc-list">
+        <li><svg><use href="#i-check"/></svg><span>Production sites must use HTTPS. The SDK refuses to start on an HTTP page outside localhost, and the bridge rejects non-loopback HTTP origins.</span></li>
+        <li><svg><use href="#i-check"/></svg><span>Every request names the real website origin and the requested profile values. The user approves or denies it in the desktop app.</span></li>
+        <li><svg><use href="#i-check"/></svg><span>Profile values are covered by the Ed25519 signature, so a network attacker cannot change them after approval.</span></li>
+        <li><svg><use href="#i-check"/></svg><span>The assertion is bound to one origin and one single-use challenge, with a short expiry.</span></li>
+        <li><svg><use href="#i-check"/></svg><span>If you use a Content Security Policy, allow the local bridge: <code>connect-src 'self' http://127.0.0.1:41991;</code></span></li>
+        <li><svg><use href="#i-check"/></svg><span>Some browsers block or prompt for requests from an HTTPS page to a local HTTP bridge (mixed content or Private Network Access). Test your target browsers before launch.</span></li>
+      </ul>
+    </section>
+
+    <section class="doc-cta reveal">
+      <div>
+        <h2>Need the desktop app?</h2>
+        <p>Install DsxID for Windows, create an identity, then try the example flow on your own site.</p>
+      </div>
+      <a class="btn btn-primary btn-lg" href="download/DsxID.exe" download>
+        <svg><use href="#i-download"/></svg>
+        <span>Download DsxID</span>
+      </a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-brand">
+      <img class="brand-logo small" src="assets/logo.png" alt="">
+      <div><strong>DsxID</strong><span>Local identity for your computer</span></div>
+    </div>
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a href="index.html">Home</a>
+      <a href="index.html#features">Features</a>
+      <a href="index.html#developers">Developers</a>
+      <a href="docs.html">Documentation</a>
+    </nav>
+    <p class="copyright">© 2026 Damián Sýkora · v0.1.0</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
