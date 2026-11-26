@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="DsxID is a local-first identity for your computer. Sign in to websites with your own Ed25519 key, approve every request, and autofill checkout details without a cloud account.">
+  <meta name="description" content="DsxID is a local-first identity for Windows and Linux. Sign in to websites with your own Ed25519 key, approve every request, and autofill checkout details without a cloud account.">
   <meta name="theme-color" content="#f3f3f3">
   <title>DsxID — Your identity, local by design</title>
   <link rel="canonical" href="https://dsxid.org/">
@@ -12,14 +12,14 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://dsxid.org/">
   <meta property="og:title" content="DsxID — Your identity, local by design">
-  <meta property="og:description" content="One local Ed25519 identity for the web. Approve every sign-in and share checkout details only when you say so.">
+  <meta property="og:description" content="One local Ed25519 identity for Windows and Linux. Approve every sign-in and share checkout details only when you say so.">
   <meta property="og:image" content="https://dsxid.org/assets/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="DsxID — your identity, local by design">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="DsxID — Your identity, local by design">
-  <meta name="twitter:description" content="One local Ed25519 identity for the web. Approve every sign-in and share checkout details only when you say so.">
+  <meta name="twitter:description" content="One local Ed25519 identity for Windows and Linux. Approve every sign-in and share checkout details only when you say so.">
   <meta name="twitter:image" content="https://dsxid.org/assets/og.png">
   <script>document.documentElement.classList.add("js");</script>
   <link rel="stylesheet" href="styles.css">
@@ -29,9 +29,9 @@
     "@type": "SoftwareApplication",
     "name": "DsxID",
     "url": "https://dsxid.org/",
-    "downloadUrl": "https://dsxid.org/download/DsxID.exe",
+    "downloadUrl": "https://github.com/damiansyky/dsxid/releases/latest",
     "applicationCategory": "SecurityApplication",
-    "operatingSystem": "Windows 10, Windows 11",
+    "operatingSystem": "Windows 10, Windows 11, Linux",
     "softwareVersion": "0.1.0",
     "description": "Local-first Ed25519 identity with explicit approval and e-shop checkout autofill.",
     "author": {
@@ -76,7 +76,7 @@
     </nav>
 
     <div class="header-actions">
-      <a class="btn btn-primary" href="download/DsxID.exe" download>
+      <a class="btn btn-primary" href="https://github.com/damiansyky/dsxid/releases/latest" target="_blank" rel="noopener">
         <svg><use href="#i-download"/></svg>
         <span>Download</span>
       </a>
@@ -93,7 +93,7 @@
         <h1>Sign in as <span>yourself.</span></h1>
         <p class="lede">DsxID gives you one private key for the web. No passwords on servers, no cloud account, and no profile data shared without your approval.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary btn-lg" href="download/DsxID.exe" download>
+          <a class="btn btn-primary btn-lg" href="https://github.com/damiansyky/dsxid/releases/latest" target="_blank" rel="noopener">
             <svg><use href="#i-download"/></svg>
             <span>Download DsxID</span>
           </a>
@@ -102,7 +102,7 @@
             <svg><use href="#i-arrow"/></svg>
           </a>
         </div>
-        <p class="hero-note">Windows build available now · SDK for any website · v0.1.0</p>
+        <p class="hero-note">Windows and Linux builds · SDK for any website · v0.1.0</p>
       </div>
 
       <div class="hero-visual reveal">
@@ -158,7 +158,7 @@
         <article class="feature-card reveal">
           <span class="icon-tile"><svg><use href="#i-bell"/></svg></span>
           <h3>Notifications and tray</h3>
-          <p>Native notifications for new requests. Closing the window keeps DsxID available in the Windows tray.</p>
+          <p>Native notifications on Windows and Linux. Closing the window keeps DsxID in the Windows tray; on Linux it quits.</p>
         </article>
         <article class="feature-card reveal">
           <span class="icon-tile"><svg><use href="#i-database"/></svg></span>
@@ -290,7 +290,7 @@
         <article class="security-card reveal">
           <span class="icon-tile"><svg><use href="#i-lock"/></svg></span>
           <h3>Local by design</h3>
-          <p>Identity, profile and approvals are stored in <code>%APPDATA%\DsxID</code>. The app makes no external network calls.</p>
+          <p>Identity, profile and approvals are stored locally: <code>%APPDATA%\DsxID</code> on Windows, <code>~/.config/DsxID</code> on Linux. The only outbound request is an HTTPS version check against GitHub Releases; no identity or profile data is sent.</p>
         </article>
         <article class="security-card reveal">
           <span class="icon-tile"><svg><use href="#i-shield"/></svg></span>
@@ -305,19 +305,23 @@
       </div>
     </section>
 
-    <section class="download-section reveal">
+    <section class="download-section reveal" id="download">
       <div class="download-card">
         <div>
           <p class="eyebrow">Ready when you are</p>
           <h2>Your key. Your computer. Your call.</h2>
-          <p>Download the portable Windows build now. The browser SDK works with websites on any platform.</p>
+          <p>Windows and Linux packages are on GitHub Releases. Pick the build for your system.</p>
         </div>
         <div class="download-actions">
-          <a class="btn btn-primary btn-lg" href="download/DsxID.exe" download>
+          <a class="btn btn-primary btn-lg" href="https://github.com/damiansyky/dsxid/releases/latest/download/DsxID.exe" target="_blank" rel="noopener">
             <svg><use href="#i-download"/></svg>
-            <span>Download DsxID</span>
+            <span>Download for Windows</span>
           </a>
-          <span>Portable .exe · 0.1.0</span>
+          <a class="btn btn-outline-light btn-lg" href="https://github.com/damiansyky/dsxid/releases/latest" target="_blank" rel="noopener">
+            <svg><use href="#i-download"/></svg>
+            <span>Linux packages</span>
+          </a>
+          <span>Windows .exe · Linux .tar.gz · 0.1.0</span>
         </div>
       </div>
     </section>
