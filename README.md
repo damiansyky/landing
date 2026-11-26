@@ -22,7 +22,13 @@ Open **http://localhost:3000/**.
 
 The workflow is [`.github/workflows/pages.yml`](../.github/workflows/pages.yml).
 It runs on every push to `main`, uploads `landing/` as the Pages artifact, and
-deploys it to the custom domain.
+deploys it to the custom domain. The artifact upload is followed by a short wait
+for the `github-pages` artifact; without it, `deploy-pages@v5` can query the
+artifact API before the upload metadata is visible.
+
+If the site is deployed from the standalone `landing` repository, use
+[`.github/workflows/static.yml`](.github/workflows/static.yml) from this folder
+instead. It performs the same wait and uses the same action versions.
 
 One-time setup:
 
@@ -103,6 +109,7 @@ offers a copy button.
 - `app.js` — mobile navigation, SDK URL copy, scroll reveal,
 - `CNAME` — `dsxid.org`,
 - `.nojekyll` — serve files as-is if branch deployment is used,
+- `.github/workflows/static.yml` — Pages workflow for the standalone landing repo,
 - `robots.txt`, `sitemap.xml` — search engine metadata,
 - `assets/app-home.png` — app overview screenshot,
 - `assets/app-profile.png` — e-shop profile screenshot,
