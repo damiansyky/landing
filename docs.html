@@ -86,7 +86,7 @@
     }
   });
 &lt;/script&gt;</code></pre>
-      <p class="doc-note">DsxID must be installed, running, and unlocked on the user's computer. The SDK talks to the local bridge at <code>127.0.0.1:41991</code>; sign-in data reaches your server only after the user approves the request.</p>
+      <p class="doc-note">DsxID must be installed, running, and unlocked on the user's device. The SDK talks to the local bridge at <code>127.0.0.1:41991</code>; sign-in data reaches your server only after the user approves the request.</p>
       <p>Data attributes work too, which is convenient for server-rendered templates:</p>
       <pre class="doc-code"><code>&lt;button data-dsxid-login
         data-start-url="/api/dsxid/start"
@@ -154,7 +154,7 @@ const result = verifyAssertion({
         <li><svg><use href="#i-check"/></svg><span>Profile values are covered by the Ed25519 signature, so a network attacker cannot change them after approval.</span></li>
         <li><svg><use href="#i-check"/></svg><span>The assertion is bound to one origin and one single-use challenge, with a short expiry.</span></li>
         <li><svg><use href="#i-check"/></svg><span>If you use a Content Security Policy, allow the local bridge: <code>connect-src 'self' http://127.0.0.1:41991;</code></span></li>
-        <li><svg><use href="#i-check"/></svg><span>Some browsers block or prompt for requests from an HTTPS page to a local HTTP bridge (mixed content or Private Network Access). Test your target browsers before launch.</span></li>
+        <li><svg><use href="#i-check"/></svg><span>Some browsers prompt for Local Network Access before an HTTPS page may call a local bridge. Allow it for your site. The SDK sets <code>targetAddressSpace: "loopback"</code>; without the permission the request cannot reach DsxID.</span></li>
       </ul>
     </section>
 
